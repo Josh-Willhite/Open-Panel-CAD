@@ -9,4 +9,4 @@ Transform a 2D DXF format aluminum composite panel drawing into a 3D model
 
 (2) Create 3D model based on 2D flat pattern.  
 
-(2) Output result as a DXF format file.  
+(3) Output result as a DXF format file.  
