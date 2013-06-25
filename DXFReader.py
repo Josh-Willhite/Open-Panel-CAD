@@ -35,7 +35,4 @@ def getLines(fileName):
             currLine = Line(shape[5], float(shape[7]), float(shape[9]), float(shape[11]), float(shape[13]), float(shape[15]), float(shape[17]))
             lines.append(currLine)
     return lines
-    
-
-lines = getLines("test.dxf")
 
