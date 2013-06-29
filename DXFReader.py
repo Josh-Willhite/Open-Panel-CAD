@@ -22,6 +22,11 @@ class Line:
 
 
 def getLines(fileName):
+    """
+
+    :param fileName:
+    :return:
+    """
     lines = []  # array to hold line objects
 
     f = open(fileName, 'r')
@@ -42,3 +47,5 @@ def getLines(fileName):
 
             lines.append(currLine)
     return lines
+
+
