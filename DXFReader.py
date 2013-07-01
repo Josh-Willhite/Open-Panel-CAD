@@ -21,30 +21,16 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 '''
+import Panel
 
-class Line:
-    def __init__(self, layer, x0, y0, z0, x1, y1, z1):
-        self.x0 = x0
-        self.y0 = y0
-        self.z0 = z0
-        self.x1 = x1
-        self.y1 = y1
-        self.z1 = z1
-        self.layer = layer
-
-    def __str__(self):
-        return ("\nLayer:%s (%.3f, %.3f, %.3f) (%.3f, %.3f, %.3f)\n"
-                % (self.layer, self.x0, self.y0, self.z0, self.x1, self.y1,
-                self.z1))
-
-
-def getLines(fileName):
+def getPanel(fileName):
     """
 
     :param fileName:
     :return:
     """
-    lines = []  # array to hold line objects
+
+    panel = Panel.Panel() # panel composed on individual lines
 
     f = open(fileName, 'r')
     dxf = f.read()
@@ -58,11 +44,11 @@ def getLines(fileName):
     for textBlock in geoTextBlock:
         shape = textBlock.split('\n')
         if shape[1] == 'LINE':
-            currLine = Line(shape[5], float(shape[7]), float(shape[9]),
+            currLine = Panel.Line(shape[5], float(shape[7]), float(shape[9]),
                             float(shape[11]), float(shape[13]),
                             float(shape[15]), float(shape[17]))
 
-            lines.append(currLine)
-    return lines
+            panel.addLine(currLine)
+    return panel
 
 

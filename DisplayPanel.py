@@ -24,25 +24,31 @@ THE SOFTWARE.
 from tkinter import *
 #from tkinter import ttk
 import DXFReader
+import DisplayTools
 
-lines = DXFReader.getLines("test.dxf")
+panel = DXFReader.getPanel("test.dxf")
 
-for line in lines:
-    print(line)
+#print("Max Width = " + str(DisplayTools.maxWidth(lines)))
+#print("Max Height = " + str(DisplayTools.maxHeight(lines)))
+
 
 root = Tk()
 root.title("PANEL VIEWER")
 
 
 #frame = ttk.Frame(root)
+canvasWidth = 800
+canvasHeight = 800
+c = Canvas(root, height=canvasHeight, width=canvasWidth, bg="grey")
 
-c = Canvas(root, height=800, width=800, bg="black")
+f = DisplayTools.scaleFactor(panel, canvasWidth, canvasHeight, .75)
 
-for line in lines:
+for line in panel.getLines():
     if line.layer == "YELLOW":
-        c.create_line(line.x0, line.y0, line.x1, line.y1, fill=line.layer, dash=(3,5))
+        c.create_line(f*line.x0, f*line.y0, f*line.x1, f*line.y1, fill=line.layer, dash=(3,5))
     else:
-        c.create_line(line.x0, line.y0, line.x1, line.y1, fill=line.layer)
+        c.create_line(f*line.x0, f*line.y0, f*line.x1, f*line.y1, fill=line.layer)
+
 
 
 c.pack()

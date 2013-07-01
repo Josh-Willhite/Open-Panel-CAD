@@ -22,4 +22,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 '''
 
+import math
 
+def scaleFactor(panel, canvasWidth, canvasHeight, size):
+    #assumes panel is always going to be much smaller then canvas, add checking later
+    xDelta = math.fabs(panel.maxWidth() - canvasWidth)
+    yDelta = math.fabs(panel.maxHeight() - canvasHeight)
+
+    if xDelta > yDelta:
+        return size*canvasWidth/panel.maxWidth()
+    else:
+        return size*canvasHeight/panel.maxHeight()
