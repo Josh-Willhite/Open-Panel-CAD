@@ -24,12 +24,19 @@ THE SOFTWARE.
 
 import math
 
-def scaleFactor(panel, canvasWidth, canvasHeight, size):
+def scaleAndCenter(panel, canvasWidth, canvasHeight, size):
     #assumes panel is always going to be much smaller then canvas, add checking later
     xDelta = math.fabs(panel.maxWidth() - canvasWidth)
     yDelta = math.fabs(panel.maxHeight() - canvasHeight)
 
     if xDelta > yDelta:
-        return size*canvasWidth/panel.maxWidth()
+        scale =  size*canvasWidth/panel.maxWidth()
     else:
-        return size*canvasHeight/panel.maxHeight()
+        scale =  size*canvasHeight/panel.maxHeight()
+
+    xTranslate = (canvasWidth - scale * panel.maxWidth())/2
+    yTranslate = (canvasHeight - scale * panel.maxHeight())/2
+
+    return [scale, xTranslate, yTranslate]
+
+

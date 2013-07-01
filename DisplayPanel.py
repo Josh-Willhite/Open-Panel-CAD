@@ -28,28 +28,23 @@ import DisplayTools
 
 panel = DXFReader.getPanel("test.dxf")
 
-#print("Max Width = " + str(DisplayTools.maxWidth(lines)))
-#print("Max Height = " + str(DisplayTools.maxHeight(lines)))
-
-
 root = Tk()
 root.title("PANEL VIEWER")
-
 
 #frame = ttk.Frame(root)
 canvasWidth = 800
 canvasHeight = 800
-c = Canvas(root, height=canvasHeight, width=canvasWidth, bg="grey")
+c = Canvas(root, height=canvasHeight, width=canvasWidth, bg='#333333')
 
-f = DisplayTools.scaleFactor(panel, canvasWidth, canvasHeight, .75)
+t = DisplayTools.scaleAndCenter(panel, canvasWidth, canvasHeight, .85)
 
 for line in panel.getLines():
     if line.layer == "YELLOW":
-        c.create_line(f*line.x0, f*line.y0, f*line.x1, f*line.y1, fill=line.layer, dash=(3,5))
+        c.create_line(t[0]*line.x0 + t[1], t[0]*line.y0 + t[2], t[0]*line.x1 + t[1], t[0]*line.y1 + t[2],
+                      fill=line.layer, dash=(18, 20), width='.5m')
     else:
-        c.create_line(f*line.x0, f*line.y0, f*line.x1, f*line.y1, fill=line.layer)
-
-
+        c.create_line(t[0]*line.x0 + t[1], t[0]*line.y0 + t[2], t[0]*line.x1 + t[1], t[0]*line.y1 + t[2],
+                      fill=line.layer, width='.25m')
 
 c.pack()
 root.mainloop()
