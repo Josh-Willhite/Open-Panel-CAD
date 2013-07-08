@@ -1,50 +1,69 @@
-'''
+"""
 Created on Jun 25, 2013
 
-Copyright (c) 2013 @author: Josh Willhite
+[Copyright (c) 2013 Josh Willhite]
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-'''
+This program is released under the MIT license. Please see the file COPYING in this distribution for the license terms.
+"""
 from tkinter import *
-#from tkinter import ttk
+from tkinter import ttk
+from tkinter import filedialog
 import DXFReader
 import DisplayTools
 
-panel = DXFReader.getPanel("test.dxf")
+fileName = ""
 
-root = Tk()
-root.title("PANEL VIEWER")
+class MenuBar:
+    def __init__(self, root, canvas):
+        self.root = root
+        self.canvas = canvas
+        mainMenu = Menu(root)
+        self.fileMenu(mainMenu)
+        root.config(menu=mainMenu)
 
-#frame = ttk.Frame(root)
-canvasWidth = 800
-canvasHeight = 800
-c = Canvas(root, height=canvasHeight, width=canvasWidth, bg='#333333')
+    def fileMenu(self, mainMenu):
+        fMenu = Menu(mainMenu, tearoff=0)
+        mainMenu.add_cascade(menu=fMenu, label='File')
+        fMenu.add_command(label='Open', command=self.openFile)
+        fMenu.add_command(label='Quit', command=self.quit)
 
-t = DisplayTools.scaleAndCenter(panel, canvasWidth, canvasHeight, .85)
+    def openFile(self):
+        fileName = filedialog.askopenfilename(filetypes=[("Drawing Exchange Format", "*.dxf"),
+                                                         ("Drawing Exchange Format", "*.DXF"), ("All Files", "*.*")])
 
-for line in panel.getLines():
-    if line.layer == "YELLOW":
-        c.create_line(t[0]*line.x0 + t[1], t[0]*line.y0 + t[2], t[0]*line.x1 + t[1], t[0]*line.y1 + t[2],
-                      fill=line.layer, dash=(18, 20), width='.5m')
-    else:
-        c.create_line(t[0]*line.x0 + t[1], t[0]*line.y0 + t[2], t[0]*line.x1 + t[1], t[0]*line.y1 + t[2],
-                      fill=line.layer, width='.25m')
+        self.canvas.drawPanel(DXFReader.getPanel(fileName))
 
-c.pack()
-root.mainloop()
+    def quit(self):
+        self.root.destroy()
+
+
+class CanvasWindow:
+    height = 800
+    width = 800
+    bgColor = '#333333'
+
+    def __init__(self, root):
+        self.canvas = Canvas(root, height=self.height, width=self.width, bg=self.bgColor)
+        self.canvas.pack()
+
+    def drawPanel(self, panel):
+        t = DisplayTools.scaleAndCenter(panel, self.width, self.height, .85)
+
+        for line in panel.getLines():
+            if line.layer == "YELLOW":
+                self.canvas.create_line(t[0]*line.x0 + t[1], t[0]*line.y0 + t[2], t[0]*line.x1 + t[1], t[0]*line.y1 +
+                                        t[2],fill=line.layer, dash=(18, 20), width='.5m')
+            else:
+                self.canvas.create_line(t[0]*line.x0 + t[1], t[0]*line.y0 + t[2], t[0]*line.x1 + t[1], t[0]*line.y1 +
+                                        t[2], fill=line.layer, width='.25m')
+
+
+def main():
+    root = Tk()
+    root.title("Open Panel CAD")
+    canvas = CanvasWindow(root)
+    MenuBar(root, canvas)
+
+    root.mainloop()
+
+main()
