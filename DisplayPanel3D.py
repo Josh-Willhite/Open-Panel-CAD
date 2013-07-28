@@ -14,7 +14,7 @@ from pyglet.gl import *
 panel = Panel.Panel
 window = pyglet.window.Window(width=640, height=640, resizable=True)
 
-#fovAngle = 45
+fovAngle = 65
 aspectRatio = float(window._width)/float(window._height)
 
 scrollX = 0
@@ -43,7 +43,7 @@ def on_resize(width, height):
     glViewport(0, 0, width, height)
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
-    #gluPerspective(fovAngle, 1, .1, 100)
+    gluPerspective(fovAngle, width/float(height), .1, 100)
     #gluOrtho2D(-(window._width)/2, window._width/2, -(window._height)/2, window._height/2, -1, 1)
     #gluOrtho2D(1.25 * -(panel.maxWidth())/2, 1.25 * panel.maxWidth()/2, 1.25 * -(panel.maxHeight())/2,
      #          1.25 * panel.maxHeight()/2, -10, 10)
@@ -57,9 +57,11 @@ def on_resize(width, height):
 def on_draw():
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
-    #gluOrtho2D(-12, 12, -12, 12, -12, 12)
+    #glViewport(0, 0, window._width, window._height)
+    #gluOrtho(-15, 15, -15, 15)
+    #gluLookAt(0,0,10,0,0,0,0,0,1)
 
-    centerPanel()
+    glTranslatef(0.0, 0.0, -18.0)
     rotatePerspective()
     grid()
     wireFrame()
@@ -91,14 +93,12 @@ def on_mouse_press(x, y, button, modifiers):
     print("MOUSE PRESS")
 
 
-
 def wireFrame():
     #centerPanel()
 
     glBegin(GL_LINES)
-    panelLines = panel.getLines()
 
-    for line in panelLines:
+    for line in panel.lines:
         if line.layer == 'YELLOW':
             glColor3f(1.0, 1.0, 0.0)
         else:
@@ -154,7 +154,7 @@ def rotatePerspective():
     glRotatef(yAngle, 0.0, 1.0, 0.0)  #Y-vector
     glRotatef(zAngle, 0.0, 0.0, 1.0)  #Z-vector
 
-
+"""
 def centerPanel():
     gluOrtho2D(1.25 * -(panel.maxWidth())/2, 1.25 * panel.maxWidth()/2, 1.25 * -(panel.maxHeight())/2,
                1.25 * panel.maxHeight()/2, -10, 10)
@@ -167,11 +167,15 @@ def centerPanel():
     #print("Viewport Width = " + str(window._width) + " Viewport Height = " + str(window._height))
 
     glTranslatef(t[0], t[1], 0.0)
-
+"""
 
 def main():
     global panel
     panel = DXFReader.getPanel("test.dxf")
+
+#    for line in panel.lines:
+#        print("(" + str(line.x0) + ", " + str(line.y0) + ") (" + str(line.x1) + ", " + str(line.y1) + ")")
+
     setup()
     pyglet.app.run()
 
