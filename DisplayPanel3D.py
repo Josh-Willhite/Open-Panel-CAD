@@ -7,15 +7,15 @@ This program is released under the MIT license. Please see the file COPYING in t
 """
 import DXFReader
 import Panel
-import DisplayTools
 import pyglet
 from pyglet.gl import *
+
 
 panel = Panel.Panel
 window = pyglet.window.Window(width=640, height=640, resizable=True)
 
 fovAngle = 65
-aspectRatio = float(window._width)/float(window._height)
+aspectRatio = float(window.width)/float(window.height)
 
 scrollX = 0
 scrollY = 0
@@ -24,6 +24,38 @@ xAngle = 0.0
 yAngle = 0.0
 zAngle = 0.0
 
+textSize = -400
+zTranslate = -20
+
+
+"""
+label = pyglet.text.Label('Hello, world',
+                          font_name='Times New Roman',
+                          font_size=8,
+                          x=window.width//2, y=window.height//2,
+                          anchor_x='center', anchor_y='center')
+"""
+
+text = "->"
+
+html = '''
+<font size=+1 color=#FF3030>
+<b>Pyglet Basic OpenGL Demo</b>
+</font><br/>
+<font size=+2 color=#00FF60>
+R = Reset<br/>
+</font>
+'''
+"""
+label = pyglet.text.HTMLLabel(html, #location,
+                              width=window.width//200,
+                              multiline=True, anchor_x='right', anchor_y='top')
+                              """
+
+label = pyglet.text.Label(text ,
+                          font_name='Verdana',
+                          font_size=14,
+                          x=-window.width//2.75, y=-window.height//2.75)
 
 def setup():
     glShadeModel(GL_SMOOTH)
@@ -38,30 +70,29 @@ def setup():
 on_resize is based on the example in the pyglet documentation here:
 http://pyglet.org/doc/programming_guide/resizing_the_window.html
 """
+
 @window.event
 def on_resize(width, height):
     glViewport(0, 0, width, height)
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
-    gluPerspective(fovAngle, width/float(height), .1, 100)
-    #gluOrtho2D(-(window._width)/2, window._width/2, -(window._height)/2, window._height/2, -1, 1)
-    #gluOrtho2D(1.25 * -(panel.maxWidth())/2, 1.25 * panel.maxWidth()/2, 1.25 * -(panel.maxHeight())/2,
-     #          1.25 * panel.maxHeight()/2, -10, 10)
+    gluPerspective(fovAngle, width/float(height), .1, 2000)
     glMatrixMode(GL_MODELVIEW)
-
-    #centerPanel()
 
     return pyglet.event.EVENT_HANDLED
 
+
 @window.event
 def on_draw():
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
-    #glViewport(0, 0, window._width, window._height)
-    #gluOrtho(-15, 15, -15, 15)
-    #gluLookAt(0,0,10,0,0,0,0,0,1)
 
-    glTranslatef(0.0, 0.0, -18.0)
+    glTranslatef(0.0,0.0, textSize) #set size of text
+    label.draw() #draw the text
+
+    glTranslatef(0.0, 0.0, -textSize + zTranslate)
+
     rotatePerspective()
     grid()
     wireFrame()
@@ -87,15 +118,23 @@ def on_mouse_scroll(x, y, scroll_x, scroll_y):
         yAngle += -1.6
         zAngle += -1.2
 
+@window.event
+def on_key_press(symbol, modifiers):
+    global label
+    global text
+    print chr(symbol),
+    text += chr(symbol)
+    label = pyglet.text.Label(text,
+                          font_name='Verdana',
+                          font_size=14,
+                          x=-window.width//2.75, y=-window.height//2.75)
 
 @window.event
 def on_mouse_press(x, y, button, modifiers):
-    print("MOUSE PRESS")
+    print("button pressed")
 
 
 def wireFrame():
-    #centerPanel()
-
     glBegin(GL_LINES)
 
     for line in panel.lines:
@@ -115,7 +154,7 @@ def grid():
     sizeX = 12
     sizeY = 12
     sizeZ = 12
-    print("GRID")
+    #print("GRID")
     #x-line
     glColor3f(1.0, 0.0, 0.0)
     glVertex3f(-sizeX, 0.0, 0.0)
@@ -170,15 +209,11 @@ def centerPanel():
 """
 
 def main():
+
     global panel
     panel = DXFReader.getPanel("test.dxf")
-
-#    for line in panel.lines:
-#        print("(" + str(line.x0) + ", " + str(line.y0) + ") (" + str(line.x1) + ", " + str(line.y1) + ")")
-
-    setup()
+    #setup()
     pyglet.app.run()
-
 
 main()
 
