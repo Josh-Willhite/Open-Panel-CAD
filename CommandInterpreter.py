@@ -22,7 +22,9 @@ def view(args):
 
 
 def fold(args):
-
+    """
+    Iterate through route lines prompting the user to enter an angle for each line.
+    """
     return "fold angle"
 
 
