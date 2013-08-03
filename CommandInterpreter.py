@@ -25,7 +25,12 @@ class Interpreter:
         if len(args) != 2:
             return "too many arguments try \"<-help\""
 
-        #if args[1] == "z":
+        if args[1] == "z":
+            self.state.axisOfRotation = "z"
+        elif args[1] == "x":
+            self.state.axisOfRotation = "x"
+        elif args[1] == "y":
+            self.state.axisOfRotation = "y"
 
         return "scroll mouse to rotate around " + args[1] + " axis"
 

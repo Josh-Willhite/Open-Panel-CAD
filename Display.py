@@ -60,15 +60,33 @@ def on_draw():
 @window.event
 def on_mouse_scroll(x, y, scroll_x, scroll_y):
     #print("scroll = (" + str(scroll_x) + ", " + str(scroll_y) + ")")
-    #glScalef(1.25, 1.25, 0.0)
+
     if scroll_y > 0:
-        st.xRotAngle += 2.0
-        st.yRotAngle += 1.6
-        st.zRotAngle += 1.2
+        if st.axisOfRotation == "z":
+            st.xRotAngle = -45
+            st.yRotAngle = 0
+            st.zRotAngle += 1
+        elif st.axisOfRotation == "x":
+            st.xRotAngle += 1
+            st.yRotAngle = -45
+            st.zRotAngle = 0
+        elif st.axisOfRotation == "y":
+            st.xRotAngle = -45
+            st.yRotAngle += 1
+            st.zRotAngle = 0
     else:
-        st.xRotAngle += -2.0
-        st.yRotAngle += -1.6
-        st.zRotAngle += -1.2
+        if st.axisOfRotation == "z":
+            st.xRotAngle = -45
+            st.yRotAngle = 0
+            st.zRotAngle += -1
+        elif st.axisOfRotation == "x":
+            st.xRotAngle += -1
+            st.yRotAngle = -45
+            st.zRotAngle = 0
+        elif st.axisOfRotation == "y":
+            st.xRotAngle = -45
+            st.yRotAngle += -1
+            st.zRotAngle = 0
 
 @window.event
 def on_key_press(symbol, modifiers):
@@ -80,7 +98,7 @@ def on_key_press(symbol, modifiers):
 
     if symbol == 65293:  # enter
         st.commandOut = "->"
-        st.commandOut += CommandInterpreter.parseCommand(st.commandIn[2:])
+        st.commandOut += cL.parseCommand(st.commandIn[2:])
         st.commandIn = "<-"
 
     if symbol == 65288 and len(st.commandIn) > 2:  # backspace
@@ -161,11 +179,13 @@ def rotatePerspective():
 
 def main():
     global st
+    global cL
     global labelIn
     global labelOut
 
     panel = DXFReader.getPanel("test.dxf")
     st = DisplayState.State(panel, 65, float(window.width)/float(window.height), .1, 2000)
+    cL = CommandInterpreter.Interpreter(st)
 
     labelIn = pyglet.text.Label(st.commandIn, font_name='Verdana', font_size=14, x=-window.width//2.75,
                                 y=-window.height//2.75 + 20)
