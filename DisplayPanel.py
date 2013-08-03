@@ -5,9 +5,11 @@ Created on Jun 25, 2013
 
 This program is released under the MIT license. Please see the file COPYING in this distribution for the license terms.
 """
-from tkinter import *
-from tkinter import ttk
-from tkinter import filedialog
+from Tkinter import *
+#from tkinter import ttk
+#from tkinter import filedialog
+
+
 import DXFReader
 import DisplayTools
 
@@ -62,7 +64,7 @@ def main():
     root = Tk()
     root.title("Open Panel CAD")
     canvas = CanvasWindow(root)
-    MenuBar(root, canvas)
+#    MenuBar(root, canvas)
 
     root.mainloop()
 

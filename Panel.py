@@ -9,7 +9,6 @@ import math
 
 
 class Panel:
-
     def __init__(self):
         self.lines = []
 
@@ -61,6 +60,37 @@ class Panel:
             if max < line.z1:
                 max = line.z1
         return max
+
+    def centerXY(self):
+        if self.xMin() == 0:
+            xTranslate = -(self.maxWidth()/2)
+
+        if self.xMin() > 0:
+            xTranslate = -(self.xMin() + self.maxWidth()/2)
+
+        if self.xMin() < 0:
+            xTranslate = self.xMin() - self.maxWidth()/2
+
+        if self.yMin() == 0:
+            yTranslate = -(self.maxHeight()/2)
+
+        if self.yMin() > 0:
+            yTranslate = -(self.yMin() + self.maxHeight()/2)
+
+        if self.yMin() < 0:
+            yTranslate = self.yMin() - self.maxHeight()/2
+
+        #print("X TRANSLATE = " + str(xTranslate))
+        #print("Y TRANSLATE = " + str(yTranslate))
+
+        for line in self.lines:
+            line.x0 += xTranslate
+            line.x1 += xTranslate
+            line.y0 += yTranslate
+            line.y1 += yTranslate
+            line.sPoint = [line.x0, line.y0, line.z0]
+            line.ePoint = [line.x1, line.y1, line.z1]
+            #print("(" + str(line.x0) + ", " + str(line.y0) + ") (" + str(line.x1) + ", " + str(line.y1) + ")")
 
 
 class Line:

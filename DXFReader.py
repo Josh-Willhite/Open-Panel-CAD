@@ -28,6 +28,9 @@ def getPanel(fileName):
                             float(shape[15]), float(shape[17]))
 
             panel.addLine(currLine)
+
+    panel.centerXY()
+
     return panel
 
 
