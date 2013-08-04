@@ -92,6 +92,14 @@ class Panel:
             line.ePoint = [line.x1, line.y1, line.z1]
             #print("(" + str(line.x0) + ", " + str(line.y0) + ") (" + str(line.x1) + ", " + str(line.y1) + ")")
 
+"""
+    def fold(self, startPt, endPt, angle):
+        for line in self.lines:
+            #if this line starts or ends at the hinge line [check to see if lines intersect]
+            #and it's between 90 and 270 degrees
+                #move
+"""
+
 
 class Line:
 

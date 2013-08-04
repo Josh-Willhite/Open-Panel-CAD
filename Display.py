@@ -13,6 +13,7 @@ from pyglet.gl import *
 
 window = pyglet.window.Window(width=640, height=640, resizable=True)
 
+mousePosition = None
 
 def setup():
     glShadeModel(GL_SMOOTH)
@@ -54,7 +55,8 @@ def on_draw():
     grid()
     translate()
     wireFrame()
-
+    if mousePosition is not None:
+        mousePointer()
 
     return pyglet.event.EVENT_HANDLED
 
@@ -90,11 +92,31 @@ def on_mouse_scroll(x, y, scroll_x, scroll_y):
             st.yRotAngle += -1
             st.zRotAngle = 0
 
+
+@window.event
+def on_mouse_motion(x, y, rx, ry):
+    global mousePosition
+    mousePosition = [x, y]
+
+
+def mousePointer():
+
+    print(mousePosition[0], mousePosition[1])
+    glPointSize(12.0)
+    glEnable(GL_POINT_SMOOTH)
+    glBegin(GL_POINTS)
+    glColor3f(0.0, 0.75, 0.75)
+
+    glVertex3f((mousePosition[0] - window.width//2)//25, (mousePosition[1] - window.height//2)//25, 0.0)
+
+    glEnd()
+
+
 @window.event
 def on_key_press(symbol, modifiers):
     global labelIn
     global labelOut
-    print(symbol)
+    #print(symbol)
     if 96 <= symbol <= 122 or 32 <= symbol <= 63:  # numbers letters or symbols
         st.commandIn += chr(symbol)
 
