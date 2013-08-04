@@ -92,8 +92,8 @@ def on_mouse_scroll(x, y, scroll_x, scroll_y):
 def on_key_press(symbol, modifiers):
     global labelIn
     global labelOut
-
-    if 96 <= symbol <= 122 or symbol == 32 or 48 <= symbol <= 57:  # number letter or space
+    print(symbol)
+    if 96 <= symbol <= 122 or 32 <= symbol <= 63:  # numbers letters or symbols
         st.commandIn += chr(symbol)
 
     if symbol == 65293:  # enter
@@ -116,6 +116,7 @@ def commandPrompt():
     labelOut.draw()
 
 def wireFrame():
+    glLineWidth(1.0)
     glBegin(GL_LINES)
 
     for line in st.panel.lines:
@@ -131,7 +132,9 @@ def wireFrame():
 
 
 def grid():
+    glLineWidth(4.0)
     glBegin(GL_LINES)
+
 
     sizeX = 12
     sizeY = 12
@@ -140,30 +143,30 @@ def grid():
     #print("GRID")
     #x-line
     glColor3f(1.0, 0.0, 0.0)
-    glVertex3f(-sizeX, 0.0, 0.0)
+    glVertex3f(0.0, 0.0, 0.0)
     glVertex3f(sizeX, 0.0, 0.0)
     #draw the x grid marks
-    for mark in range(-sizeX, sizeX):
+    for mark in range(sizeX):
         glColor3f(0.0, 0.0, 0.0)
         glVertex3f(mark, -.25, 0.0)
         glVertex3f(mark, .25, 0.0)
 
     #y-line
     glColor3f(0.0, 1.0, 0.0)
+    glVertex3f(0.0, 0.0, 0.0)
     glVertex3f(0.0, sizeY, 0.0)
-    glVertex3f(0.0, -sizeY, 0.0)
     #draw the y grid marks
-    for mark in range(-sizeY, sizeY):
+    for mark in range(sizeY):
         glColor3f(0.0, 0.0, 0.0)
         glVertex3f(-.25, mark, 0.0)
         glVertex3f(.25, mark, 0.0)
 
     #z-line
     glColor3f(0.0, 0.0, 1.0)
+    glVertex3f(0.0, 0.0, 0.0)
     glVertex3f(0.0, 0.0, sizeZ)
-    glVertex3f(0.0, 0.0, -sizeZ)
     #draw the z grid marks
-    for mark in range(-sizeZ, sizeZ):
+    for mark in range(sizeZ):
         glColor3f(0.0, 0.0, 0.0)
         glVertex3f(0.0, -.25, mark)
         glVertex3f(0.0, .25, mark)
@@ -172,9 +175,11 @@ def grid():
 
 
 def rotatePerspective():
-    glRotatef(st.xRotAngle, 1.0, 0.0, 0.0)  # X-vector
-    glRotatef(st.yRotAngle, 0.0, 1.0, 0.0)  # Y-vector
-    glRotatef(st.zRotAngle, 0.0, 0.0, 1.0)  # Z-vector
+    #glRotatef(st.xRotAngle, 1.0, 0.0, 0.0)  # X-vector
+    #glRotatef(st.yRotAngle, 0.0, 1.0, 0.0)  # Y-vector
+    #glRotatef(st.zRotAngle, 0.0, 0.0, 1.0)  # Z-vector
+    glRotatef(*st.viewVector)
+
 
 
 def main():
@@ -193,7 +198,6 @@ def main():
                                 y=-window.height//2.75)
     setup()
     pyglet.app.run()
-    #foldPanel(45)
 
 main()
 

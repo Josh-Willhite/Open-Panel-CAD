@@ -17,11 +17,15 @@ class Interpreter:
     def parseCommand(self, command):
         args = command.split(' ')
 
-        commands = {'view': self.view, 'fold': self.fold, 'help': self.help}
+        commands = {'rotateview': self.rotateview, 'view': self.view, 'fold': self.fold, 'help': self.help}
         return commands.get(args[0], self.default)(args)
 
-
     def view(self, args):
+        print(args[1], args[2], args[3], args[4])
+        self.state.viewVector = [float(args[1]), float(args[2]), float(args[3]), float(args[4])]
+        return "new view!"
+
+    def rotateview(self, args):
         if len(args) != 2:
             return "too many arguments try \"<-help\""
 
@@ -45,7 +49,7 @@ class Interpreter:
 
     def help(self, args):
 
-        return "sorry no help yet:)"
+        return "commands: view, rotateview"
 
 
     def default(self, args):

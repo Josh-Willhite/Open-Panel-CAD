@@ -22,6 +22,8 @@ class State:
     xRotAngle = 0.0
     yRotAngle = 0.0
     zRotAngle = 0.0
+
+    viewVector = [0.0, 0.0, 0.0, 0.0]  # [angle, x, y, z]
     
     axisOfRotation = "z"
 
