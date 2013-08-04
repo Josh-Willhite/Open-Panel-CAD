@@ -52,7 +52,9 @@ def on_draw():
 
     rotatePerspective()
     grid()
+    translate()
     wireFrame()
+
 
     return pyglet.event.EVENT_HANDLED
 
@@ -131,6 +133,7 @@ def wireFrame():
     glEnd()
 
 
+
 def grid():
     glLineWidth(4.0)
     glBegin(GL_LINES)
@@ -180,6 +183,9 @@ def rotatePerspective():
     #glRotatef(st.zRotAngle, 0.0, 0.0, 1.0)  # Z-vector
     glRotatef(*st.viewVector)
 
+def translate():
+    glTranslatef(st.xTrans, st.yTrans, st.zTrans)
+    #glRotate()
 
 
 def main():
