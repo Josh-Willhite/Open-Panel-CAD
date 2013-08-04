@@ -98,6 +98,7 @@ class Line:
     x0 = y0 = z0 = x1 = y1 = z1 = 0.0
     sPoint = [x0, y0, z0]
     ePoint = [x1, y1, z1]
+    folded = False
 
     def __init__(self, layer, x0, y0, z0, x1, y1, z1):
         self.x0 = x0

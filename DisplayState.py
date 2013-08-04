@@ -23,7 +23,13 @@ class State:
     yRotAngle = 0.0
     zRotAngle = 0.0
 
+    xTrans = 0.0
+    yTrans = 0.0
+    zTrans = 0.0
+
     viewVector = [0.0, 0.0, 0.0, 0.0]  # [angle, x, y, z]
+
+    folding = False
     
     axisOfRotation = "z"
 

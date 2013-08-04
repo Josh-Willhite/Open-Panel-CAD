@@ -17,8 +17,14 @@ class Interpreter:
     def parseCommand(self, command):
         args = command.split(' ')
 
-        commands = {'rotateview': self.rotateview, 'view': self.view, 'fold': self.fold, 'help': self.help}
+        commands = {'rotateview': self.rotateview, 'view': self.view, 'translate': self.translate,'fold': self.fold, 'help': self.help}
         return commands.get(args[0], self.default)(args)
+
+    def translate(self, args):
+        self.state.xTrans = float(args[1])
+        self.state.yTrans = float(args[2])
+        self.state.zTrans = float(args[3])
+        return "translated"
 
     def view(self, args):
         print(args[1], args[2], args[3], args[4])
@@ -43,8 +49,9 @@ class Interpreter:
         """
         Iterate through route lines prompting the user to enter an angle for each line.
         """
-        # DisplayPanel3D.foldPanel("no angle yet")
-        return "fold angle"
+        if self.state.folding:
+            self.state.commandOut += "angle ="
+        return "folding"
 
 
     def help(self, args):
