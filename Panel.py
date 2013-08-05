@@ -119,6 +119,7 @@ class Line:
         self.sPoint = [x0, y0, z0]
         self.ePoint = [x1, y1, z1]
 
+
     def __str__(self):
         return ("\nLayer:%s (%.3f, %.3f, %.3f) (%.3f, %.3f, %.3f)\n"
                 % (self.layer, self.x0, self.y0, self.z0, self.x1, self.y1,

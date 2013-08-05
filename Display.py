@@ -10,6 +10,8 @@ import CommandInterpreter
 import DisplayState
 import pyglet
 from pyglet.gl import *
+import math
+import Vector
 
 window = pyglet.window.Window(width=640, height=640, resizable=True)
 
@@ -57,6 +59,7 @@ def on_draw():
     wireFrame()
     if mousePosition is not None:
         mousePointer()
+        lineSelect()
 
     return pyglet.event.EVENT_HANDLED
 
@@ -96,20 +99,73 @@ def on_mouse_scroll(x, y, scroll_x, scroll_y):
 @window.event
 def on_mouse_motion(x, y, rx, ry):
     global mousePosition
-    mousePosition = [x, y]
+    mousePosition = unProject(x, y)
 
 
 def mousePointer():
 
-    print(mousePosition[0], mousePosition[1])
+    print(mousePosition)
     glPointSize(12.0)
     glEnable(GL_POINT_SMOOTH)
     glBegin(GL_POINTS)
     glColor3f(0.0, 0.75, 0.75)
 
-    glVertex3f((mousePosition[0] - window.width//2)//25, (mousePosition[1] - window.height//2)//25, 0.0)
+    glVertex3f(*mousePosition)
 
     glEnd()
+
+"""
+This method is inspired by the example program posted here:
+https://sites.google.com/site/swinesmallpygletexamples/mouse-picking
+"""
+def unProject(x, y):
+    x = 2 * (float(x) / window.width) - 1
+    y = 2 * (float(y) / window.height) - 1
+
+    tangent = math.tan(math.radians(st.fovAngleY) / 2)
+    dx = st.aspectRatio * tangent * x
+    dy = tangent * y
+    dz = st.zTranslatePanel
+    #[dx, dy, dz]/(math.sqrt(dx*dx + dy*dy + dz*dz))
+    return [dx*40, dy*40, dz]
+
+
+def lineSelect():
+    #find the line that is closets to the current mouse position
+    minDistance = None
+    for line in st.panel.lines:
+        if minDistance is None:
+            minDistance = distanceFromPointToLine(mousePosition, line)
+            closestLine = line
+        else:
+            if minDistance > distanceFromPointToLine(mousePosition, line):
+                minDistance = distanceFromPointToLine(mousePosition, line)
+                closestLine = line
+
+    glLineWidth(8.0)
+    glBegin(GL_LINES)
+    glColor3f(0.0, 0.75, 0.75)
+    glVertex3f(*closestLine.sPoint)
+    glVertex3f(*closestLine.ePoint)
+    glEnd()
+
+
+def distanceFromPointToLine(point, line):
+    """
+    from Wikipedia: http://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
+    distance = |(a - p) - ((a - p) dot  n * n)|
+    where a is a point on the line, p is a point in space, and n is the normal direction of the line.
+    """
+    a = Vector.Vector(line.x0, line.y0, line.z0)  # start point of line
+    p = Vector.Vector(point[0], point[1], st.zTranslatePanel)  # mousePointer
+
+    lineVector = Vector.Vector(line.x1 - line.x0, line.y1 - line.y0, line.z1 - line.z0) # vector of line
+
+    aMinusP = a.subtract(p)
+
+    distance = aMinusP.dotProduct(lineVector.normal().multiply(aMinusP.dotProduct(lineVector.normal())))
+
+    return distance
 
 
 @window.event
@@ -153,7 +209,6 @@ def wireFrame():
         glVertex3f(*line.ePoint)
 
     glEnd()
-
 
 
 def grid():
