@@ -1,3 +1,7 @@
+Created on Jun 24, 2013
+
+[Copyright (c) 2013 Josh Willhite]
+
 # Open-Panel-CAD
 
 Transform a 2D DXF format aluminum composite panel drawing into a 3D model
