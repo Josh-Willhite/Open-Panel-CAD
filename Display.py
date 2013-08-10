@@ -339,7 +339,6 @@ def translate():
     glTranslatef(st.xTrans, st.yTrans, st.zTrans)
     #glRotate()
 
-
 def main():
     global st
     global cL

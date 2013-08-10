@@ -24,10 +24,10 @@ class Vector:
     def multiply(self, value):
         return Vector(self.x * value, self.y * value, self.z * value)
 
-    def normal(self):
+    def normal(self):  # normal direction of vector
         return Vector(self.x/self.length, self.y/self.length, self.z/self.length)
 
-    def angle(self, vector):
+    def angle(self, vector):  # angle between two vectors
         return math.acos((self.dotProduct(vector))/(self.length * vector.length))
 
 

@@ -6,6 +6,7 @@ Created on Jun 29, 2013
 This program is released under the MIT license. Please see the file COPYING in this distribution for the license terms.
 """
 import math
+from Vector import Vector
 
 
 class Panel:
@@ -148,6 +149,41 @@ class Line:
             return True
 
         return False
+
+    def rotate(self, routeLine, angle):
+        # (1) translate/rotate route line to align with z-axis(perform same manipulations to line that is being rotated
+        # (2) perform the rotation
+        # (3) un-translate/rotate the point
+
+        # get vector normal to route line
+
+        #xAxisNormal = Vector(1, 0, 0)
+        #yAxisNormal = Vector(0, 1, 0)
+        zAxisNormal = Vector(0, 0, 1)
+
+        pointA = Vector(self.x0, self.y0, self.z0)  # point to be rotated
+        pointB = Vector(self.x1, self.y1, self.z1)  # point to be rotated
+
+        routeA = Vector(routeLine.x0, routeLine.y0, routeLine.z0)
+        routeB = Vector(routeLine.x1, routeLine.y1, routeLine.z1)
+
+        routeDirection = routeB.subtract(routeA).normal()  # direction of line to be rotated about
+
+        #xAngle = routeDirection.angle(xAxisNormal)
+        #yAngle = routeDirection.angle(yAxisNormal)
+        zAngle = routeDirection.angle(zAxisNormal)  # angle of line to be rotated about w/respect to z-axis
+
+
+ #       if zAngle != 0:
+
+
+        pointA = pointA.subtract(routeA)  # translate to origin
+        pointAx = pointA.x * math.cos(zAngle) - pointA.y * math.sin(zAngle)  # rotate to align w/z-axis
+        pointAy = pointA.y * math.cos(zAngle) - pointA.x * math.sin(zAngle)
+
+
+
+
 
 
     def __str__(self):
