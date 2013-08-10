@@ -29,7 +29,7 @@ class State:
 
     viewVector = [0.0, 0.0, 0.0, 0.0]  # [angle, x, y, z]
 
-    folding = False
+    layer = "all"
     
     axisOfRotation = "z"
 

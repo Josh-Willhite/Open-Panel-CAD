@@ -106,7 +106,7 @@ class Line:
     x0 = y0 = z0 = x1 = y1 = z1 = 0.0
     sPoint = [x0, y0, z0]
     ePoint = [x1, y1, z1]
-    folded = False
+    selected = False
 
     def __init__(self, layer, x0, y0, z0, x1, y1, z1):
         self.x0 = x0
@@ -118,6 +118,36 @@ class Line:
         self.layer = layer
         self.sPoint = [x0, y0, z0]
         self.ePoint = [x1, y1, z1]
+
+    def isPointOnLine(self, pt):
+        xInRange = False
+        yInRange = False
+        # check to make sure x is between x0 and x1
+        if self.x0 < self.x1:
+            if self.x0 <= pt[0] <= self.x1:
+                xInRange = True
+        else:
+            if self.x1 <= pt[0] <= self.x0:
+                xInRange = True
+
+        # check to make sure y is between y0 and y1
+        if self.y0 < self.y1:
+            if self.y0 <= pt[1] <= self.y1:
+                yInRange = True
+        else:
+            if self.y1 <= pt[1] <= self.y0:
+                yInRange = True
+
+        if xInRange and yInRange:
+            return True
+        else:
+            return False
+
+    def equal(self, line):
+        if self.x0 == line.x0 and self.x1 == line.x1 and self.y0 == line.y0 and self.y1 == line.y1 and self.z0 == line.z0 and self.z1 == line.z1:
+            return True
+
+        return False
 
 
     def __str__(self):

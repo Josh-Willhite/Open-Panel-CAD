@@ -11,7 +11,7 @@ import DisplayState
 import pyglet
 from pyglet.gl import *
 import math
-import Vector
+from Vector import Vector
 
 window = pyglet.window.Window(width=640, height=640, resizable=True)
 
@@ -58,7 +58,7 @@ def on_draw():
     translate()
     wireFrame()
     if mousePosition is not None:
-        mousePointer()
+       # mousePointer()
         lineSelect()
 
     return pyglet.event.EVENT_HANDLED
@@ -100,11 +100,20 @@ def on_mouse_scroll(x, y, scroll_x, scroll_y):
 def on_mouse_motion(x, y, rx, ry):
     global mousePosition
     mousePosition = unProject(x, y)
+    #print("MOUSE POSITION: " + str(mousePosition[0]) + " " + str(mousePosition[1]))
 
+@window.event
+def on_mouse_press(x, y, button, modifiers):
+    for line in st.panel.lines:
+        if line.equal(closestLine):
+            if line.selected:
+                line.selected = False
+            else:
+                line.selected = True
 
 def mousePointer():
 
-    print(mousePosition)
+    #print(mousePosition)
     glPointSize(12.0)
     glEnable(GL_POINT_SMOOTH)
     glBegin(GL_POINTS)
@@ -119,51 +128,113 @@ This method is inspired by the example program posted here:
 https://sites.google.com/site/swinesmallpygletexamples/mouse-picking
 """
 def unProject(x, y):
+
+    #gluUnProject() # figure out how to fill this...
     x = 2 * (float(x) / window.width) - 1
     y = 2 * (float(y) / window.height) - 1
+
+    #print("x = " + str(x) + " y = " + str(y))
 
     tangent = math.tan(math.radians(st.fovAngleY) / 2)
     dx = st.aspectRatio * tangent * x
     dy = tangent * y
-    dz = st.zTranslatePanel
+    dz = 0.0
     #[dx, dy, dz]/(math.sqrt(dx*dx + dy*dy + dz*dz))
-    return [dx*40, dy*40, dz]
+    #print("dx = " + str(dx*20) + " dy = " + str(dy*20))
+    #print("MOUSE POSITION: " + str(dx*40) + " " + str(dy*40))
+    return [dx*math.fabs(st.zTranslatePanel), dy*math.fabs(st.zTranslatePanel), dz]
 
 
 def lineSelect():
-    #find the line that is closets to the current mouse position
+    #find the line that is closest to the current mouse position
+    global closestLine
     minDistance = None
-    for line in st.panel.lines:
-        if minDistance is None:
-            minDistance = distanceFromPointToLine(mousePosition, line)
-            closestLine = line
-        else:
-            if minDistance > distanceFromPointToLine(mousePosition, line):
-                minDistance = distanceFromPointToLine(mousePosition, line)
-                closestLine = line
 
+    for line in st.panel.lines:
+        if line.layer.lower() == st.layer or  st.layer == 'all':
+            if minDistance is None:
+                minDistance = distanceFromPointToLine(line)
+                closestLine = line
+            else:
+                if minDistance > distanceFromPointToLine(line):
+                    minDistance = distanceFromPointToLine(line)
+                    closestLine = line
+    #print(minDistance)
     glLineWidth(8.0)
     glBegin(GL_LINES)
-    glColor3f(0.0, 0.75, 0.75)
+    glColor3f(0.0, 0.75, 0.75)  # cyan
     glVertex3f(*closestLine.sPoint)
     glVertex3f(*closestLine.ePoint)
     glEnd()
 
 
-def distanceFromPointToLine(point, line):
+def distanceFromPointToLine(line):
     """
     from Wikipedia: http://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
     distance = |(a - p) - ((a - p) dot  n * n)|
     where a is a point on the line, p is a point in space, and n is the normal direction of the line.
     """
-    a = Vector.Vector(line.x0, line.y0, line.z0)  # start point of line
-    p = Vector.Vector(point[0], point[1], st.zTranslatePanel)  # mousePointer
+    a = Vector(line.x0, line.y0, line.z0)  # start point of line (this can be any point on the line)
+    p = Vector(mousePosition[0], mousePosition[1], mousePosition[2])  # vector pointing to current mouse location
 
-    lineVector = Vector.Vector(line.x1 - line.x0, line.y1 - line.y0, line.z1 - line.z0) # vector of line
+
+    n = Vector(line.x1 - line.x0, line.y1 - line.y0, line.z1 - line.z0).normal() # unit vector along direction of line
 
     aMinusP = a.subtract(p)
 
-    distance = aMinusP.dotProduct(lineVector.normal().multiply(aMinusP.dotProduct(lineVector.normal())))
+    dirNorm = aMinusP.subtract(n.multiply(aMinusP.dotProduct(n))) # this is the direction normal to the line
+    disNorm = dirNorm.length # this is the distance normal to the line
+
+    startPoint = Vector(line.x0, line.y0, line.z0)
+    endPoint = Vector(line.x1, line.y1, line.z1)
+    mousePoint = Vector(mousePosition[0], mousePosition[1], mousePosition[2])
+
+    endVector = mousePoint.subtract(endPoint)
+    #print("Distance End = " + str(distanceEnd))
+
+    startVector = mousePoint.subtract(startPoint)
+    #print("Distance Start = " + str(distanceStart))
+
+    distanceEnd = endVector.length
+    distanceStart = startVector.length
+    
+    #check to see if the normal line falls outside of the line we're measuring to
+    normPoint = [dirNorm.x + mousePoint.x, dirNorm.y + mousePoint.y]
+    if line.isPointOnLine(normPoint):
+        short = 'norm'
+        distance = disNorm
+    elif distanceEnd <= distanceStart:
+        short = 'end'
+        distance = distanceEnd
+    else:
+        short = 'start'
+        distance = distanceStart
+
+    #print("NORMDIST = " + str(disNorm) + " START/END = " + str(distanceEnd) + " " + str(distanceStart))
+
+
+    #print("ANGLE = " + str(angle))
+    """
+    glLineWidth(1.0)
+    glBegin(GL_LINES)
+    glColor3f(0.0, 0.0, 0.0)  # black
+
+    if short == 'start':
+        print("NORMSTART = " + "(" + str(dirNorm.x) + ", " + str(dirNorm.y) + ")")
+        print("START = " + "(" + str(startPoint.x) + ", " + str(startPoint.y) + ")")
+        print("MOUSE = " + "(" + str(mousePoint.x) + ", " + str(mousePoint.y) + ")")
+        glVertex3f(mousePoint.x, mousePoint.y, 0.0)
+        glVertex3f(startPoint.x, startPoint.y, 0.0)
+    if short == 'end':
+        print("NORMEND = " + "(" + str(dirNorm.x) + ", " + str(dirNorm.y) + ")")
+        glVertex3f(mousePoint.x, mousePoint.y, 0.0)
+        glVertex3f(endPoint.x, endPoint.y, 0.0)
+    if short == 'norm':
+        glVertex3f(mousePoint.x, mousePoint.y, 0.0)
+        glVertex3f(dirNorm.x + mousePoint.x, dirNorm.y + mousePoint.y, 0.0)
+
+    glEnd()
+    """
 
     return distance
 
@@ -173,7 +244,7 @@ def on_key_press(symbol, modifiers):
     global labelIn
     global labelOut
     #print(symbol)
-    if 96 <= symbol <= 122 or 32 <= symbol <= 63:  # numbers letters or symbols
+    if 96 <= symbol <= 122 or 32 <= symbol <= 90:  # numbers letters or symbols
         st.commandIn += chr(symbol)
 
     if symbol == 65293:  # enter
@@ -204,11 +275,15 @@ def wireFrame():
             glColor3f(1.0, 1.0, 0.0)
         else:
             glColor3f(0.0, 0.0, 1.0)
+        if line.selected:
+            glColor3f(0.0, 0.75, 0.75)
 
-        glVertex3f(*line.sPoint)
-        glVertex3f(*line.ePoint)
+        if line.layer.lower() == st.layer or  st.layer == 'all':
+            glVertex3f(*line.sPoint)
+            glVertex3f(*line.ePoint)
 
     glEnd()
+
 
 
 def grid():

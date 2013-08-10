@@ -27,3 +27,8 @@ class Vector:
     def normal(self):
         return Vector(self.x/self.length, self.y/self.length, self.z/self.length)
 
+    def angle(self, vector):
+        return math.acos((self.dotProduct(vector))/(self.length * vector.length))
+
+
+

@@ -17,7 +17,7 @@ class Interpreter:
     def parseCommand(self, command):
         args = command.split(' ')
 
-        commands = {'rotateview': self.rotateview, 'view': self.view, 'translate': self.translate,'fold': self.fold, 'help': self.help}
+        commands = {'layer': self.layer, 'rotateview': self.rotateview, 'view': self.view, 'translate': self.translate,'fold': self.fold, 'help': self.help}
         return commands.get(args[0], self.default)(args)
 
     def translate(self, args):
@@ -44,20 +44,29 @@ class Interpreter:
 
         return "scroll mouse to rotate around " + args[1] + " axis"
 
+    def layer(self, args):
+        self.state.layer = args[1]
+        return "showing " + args[1] + " layer"
 
     def fold(self, args):
-        """
-        Iterate through route lines prompting the user to enter an angle for each line.
-        """
-        if self.state.folding:
-            self.state.commandOut += "angle ="
-        return "folding"
+        foldLine = None
+        #  find the route line to rotate other lines about
+        for line in self.state.panel.lines:
+            if line.selected and line.layer == 'YELLOW':
+                if foldLine is None:
+                    foldLine = line
+                else:
+                    return "Please select only ONE route line"
 
+        if foldLine is None:
+            return "Please select route line to fold"
+
+
+        return "folded to " + args[1] + " degree angle"
 
     def help(self, args):
 
         return "commands: view, rotateview"
-
 
     def default(self, args):
         return "\"" + args[0] + "\" is not a command try: \"<-help\""
