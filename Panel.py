@@ -7,6 +7,7 @@ This program is released under the MIT license. Please see the file COPYING in t
 """
 import math
 from Vector import Vector
+import numpy as np
 
 
 class Panel:
@@ -151,40 +152,53 @@ class Line:
         return False
 
     def rotate(self, routeLine, angle):
-        # (1) translate/rotate route line to align with z-axis(perform same manipulations to line that is being rotated
-        # (2) perform the rotation
-        # (3) un-translate/rotate the point
 
-        # get vector normal to route line
+        translateVector = Vector(routeLine.x0, routeLine.y0, routeLine.z0)
 
-        #xAxisNormal = Vector(1, 0, 0)
-        #yAxisNormal = Vector(0, 1, 0)
-        zAxisNormal = Vector(0, 0, 1)
+        rotAxis = Vector(routeLine.x1, routeLine.y1, routeLine.z1).subtract(translateVector).normal()  # translated to origin
 
-        pointA = Vector(self.x0, self.y0, self.z0)  # point to be rotated
-        pointB = Vector(self.x1, self.y1, self.z1)  # point to be rotated
+        radAngle = math.radians(float(angle))
 
-        routeA = Vector(routeLine.x0, routeLine.y0, routeLine.z0)
-        routeB = Vector(routeLine.x1, routeLine.y1, routeLine.z1)
+        sVector = Vector(self.x0, self.y0, self.z0).subtract(translateVector)  # translate start of line
+        eVector = Vector(self.x1, self.y1, self.z1).subtract(translateVector)  # translate end of line
 
-        routeDirection = routeB.subtract(routeA).normal()  # direction of line to be rotated about
+        vS = np.array([sVector.x, sVector.y, sVector.z])  # convert to numpy array
+        vE = np.array([eVector.x, eVector.y, eVector.z])  # convert to numpy array
+        axis = np.array([rotAxis.x, rotAxis.y, rotAxis.z])  # convert to numpy array
 
-        #xAngle = routeDirection.angle(xAxisNormal)
-        #yAngle = routeDirection.angle(yAxisNormal)
-        zAngle = routeDirection.angle(zAxisNormal)  # angle of line to be rotated about w/respect to z-axis
+        vSRotated = np.dot(self.rotation_matrix(axis, radAngle), vS)
+        vERotated = np.dot(self.rotation_matrix(axis, radAngle), vE)
+
+        sRotVector = Vector(vSRotated[0], vSRotated[1], vSRotated[2]).add(translateVector)
+        eRotVector = Vector(vERotated[0], vERotated[1], vERotated[2]).add(translateVector)
 
 
- #       if zAngle != 0:
+        self.x0 = sRotVector.x
+        self.y0 = sRotVector.y
+        self.z0 = sRotVector.z
 
+        self.x1 = eRotVector.x
+        self.y1 = eRotVector.y
+        self.z1 = eRotVector.z
 
-        pointA = pointA.subtract(routeA)  # translate to origin
-        pointAx = pointA.x * math.cos(zAngle) - pointA.y * math.sin(zAngle)  # rotate to align w/z-axis
-        pointAy = pointA.y * math.cos(zAngle) - pointA.x * math.sin(zAngle)
+        self.sPoint = [self.x0, self.y0, self.z0]
+        self.ePoint = [self.x1, self.y1, self.z1]
 
+        self.selected = False
 
-
-
-
+    """
+    This method is taken from user unutbu's respone to this post:
+    http://stackoverflow.com/questions/6802577/python-rotation-of-3d-vector
+    It's based on this formula:
+    http://en.wikipedia.org/wiki/Euler%E2%80%93Rodrigues_parameters
+    """
+    def rotation_matrix(self, axis,theta):
+        axis = axis/np.sqrt(np.dot(axis,axis))
+        a = np.cos(theta/2)
+        b,c,d = -axis*np.sin(theta/2)
+        return np.array([[a*a+b*b-c*c-d*d, 2*(b*c-a*d), 2*(b*d+a*c)],
+                        [2*(b*c+a*d), a*a+c*c-b*b-d*d, 2*(c*d-a*b)],
+                        [2*(b*d-a*c), 2*(c*d+a*b), a*a+d*d-b*b-c*c]])
 
     def __str__(self):
         return ("\nLayer:%s (%.3f, %.3f, %.3f) (%.3f, %.3f, %.3f)\n"

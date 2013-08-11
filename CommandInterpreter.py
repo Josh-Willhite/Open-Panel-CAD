@@ -49,6 +49,8 @@ class Interpreter:
         return "showing " + args[1] + " layer"
 
     def fold(self, args):
+        #need to modify this code to take into account selecting multiple route lines, need to somehow identify line
+        #that is to be rotated about.
         foldLine = None
         #  find the route line to rotate other lines about
         for line in self.state.panel.lines:
@@ -61,8 +63,13 @@ class Interpreter:
         if foldLine is None:
             return "Please select route line to fold"
 
+        for line in self.state.panel.lines:
+            if line.selected and line.layer == 'BLUE':
+                line.rotate(foldLine, args[1])
+
 
         return "folded to " + args[1] + " degree angle"
+
 
     def help(self, args):
 

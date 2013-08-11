@@ -21,6 +21,9 @@ class Vector:
     def subtract(self, vector):
         return Vector(self.x - vector.x, self.y - vector.y, self.z - vector.z)
 
+    def add(self, vector):
+        return Vector(self.x + vector.x, self.y + vector.y, self.z + vector.z)
+
     def multiply(self, value):
         return Vector(self.x * value, self.y * value, self.z * value)
 
