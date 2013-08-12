@@ -56,8 +56,9 @@ def on_draw():
     rotatePerspective()
     grid()
     translate()
-    wireFrame()
-    if mousePosition is not None:
+    if st.openedPanel is not None:
+        wireFrame()
+    if mousePosition is not None and st.openedPanel is not None:
        # mousePointer()
         lineSelect()
 
@@ -69,31 +70,37 @@ def on_mouse_scroll(x, y, scroll_x, scroll_y):
     #print("scroll = (" + str(scroll_x) + ", " + str(scroll_y) + ")")
 
     if scroll_y > 0:
-        if st.axisOfRotation == "z":
-            st.xRotAngle = -45
-            st.yRotAngle = 0
-            st.zRotAngle += 1
-        elif st.axisOfRotation == "x":
-            st.xRotAngle += 1
-            st.yRotAngle = -45
-            st.zRotAngle = 0
-        elif st.axisOfRotation == "y":
-            st.xRotAngle = -45
-            st.yRotAngle += 1
-            st.zRotAngle = 0
+        st.xRotAngle += 1.5
+        st.yRotAngle += 1.5
+        st.zRotAngle += 1.5
+        # if st.axisOfRotation == "z":
+        #     st.xRotAngle = -45
+        #     st.yRotAngle = 0
+        #     st.zRotAngle += 1
+        # elif st.axisOfRotation == "x":
+        #     st.xRotAngle += 1
+        #     st.yRotAngle = -45
+        #     st.zRotAngle = 0
+        # elif st.axisOfRotation == "y":
+        #     st.xRotAngle = -45
+        #     st.yRotAngle += 1
+        #     st.zRotAngle = 0
     else:
-        if st.axisOfRotation == "z":
-            st.xRotAngle = -45
-            st.yRotAngle = 0
-            st.zRotAngle += -1
-        elif st.axisOfRotation == "x":
-            st.xRotAngle += -1
-            st.yRotAngle = -45
-            st.zRotAngle = 0
-        elif st.axisOfRotation == "y":
-            st.xRotAngle = -45
-            st.yRotAngle += -1
-            st.zRotAngle = 0
+        st.xRotAngle += -1.5
+        st.yRotAngle += -1.5
+        st.zRotAngle += -1.5
+        # if st.axisOfRotation == "z":
+        #     st.xRotAngle = -45
+        #     st.yRotAngle = 0
+        #     st.zRotAngle += -1
+        # elif st.axisOfRotation == "x":
+        #     st.xRotAngle += -1
+        #     st.yRotAngle = -45
+        #     st.zRotAngle = 0
+        # elif st.axisOfRotation == "y":
+        #     st.xRotAngle = -45
+        #     st.yRotAngle += -1
+        #     st.zRotAngle = 0
 
 
 @window.event
@@ -146,6 +153,7 @@ def unProject(x, y):
 
 
 def lineSelect():
+    # todo figure out why I'm unable to select lines that aren't in the XY plane
     #find the line that is closest to the current mouse position
     global closestLine
     minDistance = None
@@ -214,19 +222,19 @@ def distanceFromPointToLine(line):
 
 
     #print("ANGLE = " + str(angle))
-    """
+
     glLineWidth(1.0)
     glBegin(GL_LINES)
     glColor3f(0.0, 0.0, 0.0)  # black
 
     if short == 'start':
-        print("NORMSTART = " + "(" + str(dirNorm.x) + ", " + str(dirNorm.y) + ")")
-        print("START = " + "(" + str(startPoint.x) + ", " + str(startPoint.y) + ")")
-        print("MOUSE = " + "(" + str(mousePoint.x) + ", " + str(mousePoint.y) + ")")
+        # print("NORMSTART = " + "(" + str(dirNorm.x) + ", " + str(dirNorm.y) + ")")
+        # print("START = " + "(" + str(startPoint.x) + ", " + str(startPoint.y) + ")")
+        # print("MOUSE = " + "(" + str(mousePoint.x) + ", " + str(mousePoint.y) + ")")
         glVertex3f(mousePoint.x, mousePoint.y, 0.0)
         glVertex3f(startPoint.x, startPoint.y, 0.0)
     if short == 'end':
-        print("NORMEND = " + "(" + str(dirNorm.x) + ", " + str(dirNorm.y) + ")")
+        # print("NORMEND = " + "(" + str(dirNorm.x) + ", " + str(dirNorm.y) + ")")
         glVertex3f(mousePoint.x, mousePoint.y, 0.0)
         glVertex3f(endPoint.x, endPoint.y, 0.0)
     if short == 'norm':
@@ -234,7 +242,7 @@ def distanceFromPointToLine(line):
         glVertex3f(dirNorm.x + mousePoint.x, dirNorm.y + mousePoint.y, 0.0)
 
     glEnd()
-    """
+
 
     return distance
 
@@ -290,7 +298,6 @@ def grid():
     glLineWidth(4.0)
     glBegin(GL_LINES)
 
-
     sizeX = 12
     sizeY = 12
     sizeZ = 12
@@ -330,14 +337,15 @@ def grid():
 
 
 def rotatePerspective():
-    #glRotatef(st.xRotAngle, 1.0, 0.0, 0.0)  # X-vector
-    #glRotatef(st.yRotAngle, 0.0, 1.0, 0.0)  # Y-vector
-    #glRotatef(st.zRotAngle, 0.0, 0.0, 1.0)  # Z-vector
-    glRotatef(*st.viewVector)
+    glRotatef(st.xRotAngle, 1.0, 0.0, 0.0)  # X-vector
+    glRotatef(st.yRotAngle, 0.0, 1.0, 0.0)  # Y-vector
+    glRotatef(st.zRotAngle, 0.0, 0.0, 1.0)  # Z-vector
+
 
 def translate():
     glTranslatef(st.xTrans, st.yTrans, st.zTrans)
     #glRotate()
+
 
 def main():
     global st
@@ -345,8 +353,7 @@ def main():
     global labelIn
     global labelOut
 
-    panel = DXFReader.getPanel("test.dxf")
-    st = DisplayState.State(panel, 65, float(window.width)/float(window.height), .1, 2000)
+    st = DisplayState.State(65, float(window.width)/float(window.height), .1, 2000)
     cL = CommandInterpreter.Interpreter(st)
 
     labelIn = pyglet.text.Label(st.commandIn, font_name='Verdana', font_size=14, x=-window.width//2.75,

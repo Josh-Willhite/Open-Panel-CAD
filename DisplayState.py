@@ -27,7 +27,7 @@ class State:
     yTrans = 0.0
     zTrans = 0.0
 
-    viewVector = [0.0, 0.0, 0.0, 0.0]  # [angle, x, y, z]
+    #viewVector = [0.0, 0.0, 0.0, 0.0]  # [angle, x, y, z]
 
     layer = "all"
     
@@ -39,8 +39,9 @@ class State:
     commandIn = "<-"
     commandOut = "->"
 
-    def __init__(self, panel, fovAngleY, aspectRatio, zNear, zFar):
-        self.panel = panel
+    openedPanel = None
+
+    def __init__(self, fovAngleY, aspectRatio, zNear, zFar):
         self.fovAngleY = fovAngleY
         self.aspectRatio = aspectRatio
         self.zNear = zNear

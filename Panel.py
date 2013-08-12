@@ -124,6 +124,7 @@ class Line:
     def isPointOnLine(self, pt):
         xInRange = False
         yInRange = False
+        #zInRange = False
         # check to make sure x is between x0 and x1
         if self.x0 < self.x1:
             if self.x0 <= pt[0] <= self.x1:
@@ -139,6 +140,14 @@ class Line:
         else:
             if self.y1 <= pt[1] <= self.y0:
                 yInRange = True
+
+
+        # if self.z0 < self.z1:
+        #     if self.z0 <= pt[2] <= self.z1:
+        #         zInRange = True
+        # else:
+        #     if self.z1 <= pt[2] <= self.z0:
+        #         zInRange = True
 
         if xInRange and yInRange:
             return True

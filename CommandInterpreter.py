@@ -7,6 +7,8 @@ This program is released under the MIT license. Please see the file COPYING in t
 """
 import math
 import DisplayState
+import DXFReader
+
 
 
 class Interpreter:
@@ -17,8 +19,16 @@ class Interpreter:
     def parseCommand(self, command):
         args = command.split(' ')
 
-        commands = {'layer': self.layer, 'rotateview': self.rotateview, 'view': self.view, 'translate': self.translate,'fold': self.fold, 'help': self.help}
+        commands = {'open': self.open, 'layer': self.layer, 'rotateview': self.rotateview, 'view': self.view, 'translate': self.translate,'fold': self.fold, 'help': self.help}
         return commands.get(args[0], self.default)(args)
+
+    def open(self, args):
+
+        self.state.openedPanel = args[1]
+        self.state.panel = DXFReader.getPanel(args[1])
+
+        return "opened " + args[1]
+
 
     def translate(self, args):
         self.state.xTrans = float(args[1])
@@ -27,10 +37,41 @@ class Interpreter:
         return "translated"
 
     def view(self, args):
-        print(args[1], args[2], args[3], args[4])
-        self.state.viewVector = [float(args[1]), float(args[2]), float(args[3]), float(args[4])]
-        return "new view!"
+        if len(args) == 4:
+            self.state.xRotAngle = float(args[1])
+            self.state.yRotAngle = float(args[2])
+            self.state.zRotAngle = float(args[3])
+        elif len(args) == 2:
+            if args[1] == 'top':
+                self.state.xRotAngle = 0.0
+                self.state.yRotAngle = 0.0
+                self.state.zRotAngle = 0.0
+            if args[1] == 'bottom':
+                self.state.xRotAngle = 180.0
+                self.state.yRotAngle = 0.0
+                self.state.zRotAngle = 0.0
+            if args[1] == 'front':
+                self.state.xRotAngle = -90.0
+                self.state.yRotAngle = 0.0
+                self.state.zRotAngle = 0.0
+            if args[1] == 'back':
+                self.state.xRotAngle = -90.0
+                self.state.yRotAngle = 0.0
+                self.state.zRotAngle = 180.0
+            if args[1] == 'right':
+                self.state.xRotAngle = -90.0
+                self.state.yRotAngle = 0.0
+                self.state.zRotAngle = -90.0
+            if args[1] == 'left':
+                self.state.xRotAngle = -90.0
+                self.state.yRotAngle = 0.0
+                self.state.zRotAngle = 90.0
+        else:
+            return "usage:view xangle yangle zangle"
 
+        return "(X angle, Y angle, Z angle) = (" + str(self.state.xRotAngle) + ", " + str(self.state.yRotAngle) + ", " + str(self.state.zRotAngle) + ")"
+
+    # not using this method at the moment
     def rotateview(self, args):
         if len(args) != 2:
             return "too many arguments try \"<-help\""
@@ -66,7 +107,6 @@ class Interpreter:
         for line in self.state.panel.lines:
             if line.selected and line.layer == 'BLUE':
                 line.rotate(foldLine, args[1])
-
 
         return "folded to " + args[1] + " degree angle"
 
