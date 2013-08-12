@@ -22,8 +22,9 @@ def getPanel(fileName):
 
     for textBlock in geoTextBlock:
         shape = textBlock.split('\n')
-        if shape[1] == 'LINE':
-            currLine = Panel.Line(shape[5], float(shape[7]), float(shape[9]),
+        print(shape)
+        if 'LINE' in shape[1]:
+            currLine = Panel.Line(shape[5].strip('\r'), float(shape[7]), float(shape[9]),
                             float(shape[11]), float(shape[13]),
                             float(shape[15]), float(shape[17]))
 

@@ -222,7 +222,7 @@ def distanceFromPointToLine(line):
 
 
     #print("ANGLE = " + str(angle))
-
+    """
     glLineWidth(1.0)
     glBegin(GL_LINES)
     glColor3f(0.0, 0.0, 0.0)  # black
@@ -242,7 +242,7 @@ def distanceFromPointToLine(line):
         glVertex3f(dirNorm.x + mousePoint.x, dirNorm.y + mousePoint.y, 0.0)
 
     glEnd()
-
+    """
 
     return distance
 
