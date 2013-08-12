@@ -2,6 +2,7 @@
 Created on August 5, 2013
 
 [Copyright (c) 2013 Josh Willhite]
+Repository: https://github.com/Josh-Willhite/Open-Panel-CAD Email: jwillhite@gmail.com
 
 This program is released under the MIT license. Please see the file COPYING in this distribution for the license terms.
 """
