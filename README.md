@@ -1,11 +1,10 @@
+Created on Jun 24, 2013
+[Copyright (c) 2013 Josh Willhite]
+Repository: https://github.com/Josh-Willhite/Open-Panel-CAD Email: jwillhite@gmail.com
+
 # Open-Panel-CAD
 
 Transform a 2D DXF format aluminum composite panel drawing into a 3D model
-
-Created on Jun 24, 2013
-
-[Copyright (c) 2013 Josh Willhite]
-Repository: https://github.com/Josh-Willhite/Open-Panel-CAD Email: jwillhite@gmail.com
 
 ### -BASIC FUNCTIONALITY-
 
